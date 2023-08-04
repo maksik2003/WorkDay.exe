@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+# Небольшая информация:
+# На 20.07.2023 приложение содержит в себе 3496 строк (включая самописные библиотеки)
+
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import QThread
 import colors as color
@@ -10,11 +13,11 @@ import datetime
 import re
 import report
 from socket import gethostname
-import time
 import os.path, os
 
 colors = color.color_theme()
-APP_VERSION = 4
+APP_VERSION = 7
+APP_NAME = 'WorkDay'
 
 class Ui_error(object):
         def setup_error(self, Widget):
@@ -530,7 +533,7 @@ class Ui_Form(object):
 
                 self.btn_adduser_save = QtWidgets.QPushButton(self.users)
                 self.btn_adduser_save.setEnabled(True)
-                self.btn_adduser_save.setGeometry(QtCore.QRect(370, 170, 220, 30))
+                self.btn_adduser_save.setGeometry(QtCore.QRect(370, 300, 220, 30))
                 self.btn_adduser_save.setFont(self.font)
                 self.btn_adduser_save.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
                 self.btn_adduser_save.setStyleSheet(self.styleSheet.inverse_btn)
@@ -549,7 +552,7 @@ class Ui_Form(object):
 
                 self.btn_adduser_cancel = QtWidgets.QPushButton(self.users)
                 self.btn_adduser_cancel.setEnabled(True)
-                self.btn_adduser_cancel.setGeometry(QtCore.QRect(600, 170, 80, 30))
+                self.btn_adduser_cancel.setGeometry(QtCore.QRect(600, 300, 80, 30))
                 self.btn_adduser_cancel.setFont(self.font)
                 self.btn_adduser_cancel.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
                 self.btn_adduser_cancel.setStyleSheet(self.styleSheet.inverse_btn)
@@ -568,12 +571,19 @@ class Ui_Form(object):
                 self.lineEdit_login.setStyleSheet(self.styleSheet.input_text)
                 self.lineEdit_login.setObjectName("lineEdit_login")
 
+                self.lineEdit_organization = QtWidgets.QLineEdit(self.users)
+                self.lineEdit_organization.setGeometry(QtCore.QRect(370, 150, 310, 40))
+                self.lineEdit_organization.setFont(lineEdit_font)
+                self.lineEdit_organization.setStyleSheet(self.styleSheet.input_text)
+                self.lineEdit_organization.setObjectName("lineEdit_organization")
+
                 self.label_adduser_bg = QtWidgets.QLabel(self.users)
-                self.label_adduser_bg.setGeometry(QtCore.QRect(360, 10, 330, 200))
+                self.label_adduser_bg.setGeometry(QtCore.QRect(360, 10, 330, 330))
                 self.label_adduser_bg.setStyleSheet(self.styleSheet.label_bg)
                 self.label_adduser_bg.setObjectName("label_adduser_bg")
 
                 self.label_adduser_bg.raise_()
+                self.lineEdit_organization.raise_()
                 self.label_permissions_bg.raise_()
                 self.label_add_user_title.raise_()
                 self.label_permissions_title.raise_()
@@ -773,7 +783,6 @@ class Ui_Form(object):
                 self.status_title.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeading|QtCore.Qt.AlignmentFlag.AlignHCenter|QtCore.Qt.AlignmentFlag.AlignVCenter)
                 self.status_title.setObjectName("status_title")
 
-
         def retranslateUi(self, Form):
                 Form.setWindowTitle("WorkDay")
 
@@ -827,6 +836,7 @@ class Ui_Form(object):
                 self.btn_adduser_cancel.setText("Отмена")
                 self.label_add_user_title.setText("Добавить пользователя")
                 self.lineEdit_login.setPlaceholderText("Логин")
+                self.lineEdit_organization.setPlaceholderText('Организация')
                 self.tabWidget.setTabText(self.tabWidget.indexOf(self.users), "Управление пользователем")
                 self.label_errors.setText("") # Label для вывода информации
                 self.btn_changeuser_save.setText('Сохранить')
@@ -1004,6 +1014,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
 
                                 self.lineEdit_username.textChanged.connect(lambda ch, obj = self.lineEdit_username: self.addUser_changed(obj))
                                 self.lineEdit_login.textChanged.connect(lambda ch, obj = self.lineEdit_login: self.addUser_changed(obj))
+                                self.lineEdit_organization.textChanged.connect(lambda ch, obj = self.lineEdit_login: self.addUser_changed(obj))
 
                                 if self.user.my_root_admin and not self.user.my_root_report:
                                         # Данное условие выполняется если у пользователя есть права Администратора, но при этом нету прав на Редактирование отчета
@@ -1055,7 +1066,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                                         for i in user_list:
                                                 self.combobox_username.addItem( i[0] )
 
-                                if self.user.my_root_startday and self.user.my_root_inReport:
+                                if self.user.my_root_startday:
                                         # Активация 3 вкладки "WorkDay"
 
                                         # Проверяем есть ли доступы к 1 и 2 вкладке, если нету, то отключаем их отображение
@@ -1147,7 +1158,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                         my_id = self.user.my_id,
                         day = report.date_datetime('today').format_db
                 )).fetchone()
-                if last_record:
+                if last_record[0]:
                         id_record = last_record[0]
                         start_day = last_record[1]
                         start_dinner = last_record[2]
@@ -1316,7 +1327,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                 dinner_len = today_record[5]
                 self.wd_id_record = today_record[6]
 
-                if day_len:
+                if day_len or day_len == 0:
                         # Если поле day_len не пустое, то значит что день был завершен
                         self.btn_start.setEnabled(False)
                         self.btn_start.setStyleSheet(self.styleSheet.inverse_btn_off)
@@ -1377,6 +1388,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
 
                                 self.btn_end.setEnabled(False)
                                 self.btn_end.setStyleSheet(self.styleSheet.inverse_btn_off)
+
+                                self.isDinnerEnded = False
 
                                 self.wd_start_day = report.date_datetime(start_day, mode = 'time')
                                 self.wd_start_dinner = report.date_datetime(start_dinner, mode = 'time')
@@ -1537,6 +1550,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                                 print('[TEST MODE] Обед закончен: ' + self.wd_end_dinner.format_db)
 
         def end_day(self):
+
+                # Проверяем чтобы версия программы не изменилась при закрытии программы
+                bd_version = self.cursor.execute("""
+                        SELECT value FROM options
+                        WHERE name = 'app_version'
+                """).fetchone()
+
+                if bd_version[0] != APP_VERSION:
+                        self.label_errors.setText('Перед закрытием обнови WorkDay\nСмена не закрыта')
+                        return
+
                 self.wd_mode = 'ended'                  # Устанавливаем режим WorkDay
                 self.updater.running = False            # Оставливаем обновление
 
@@ -1557,6 +1581,31 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
 
                 day_len = (self.wd_end_day.date - self.wd_start_day.date).seconds // 60 - dinner_len
 
+                # Далее начинается костыль. 
+                # К сожалению без него может быть ошибка в учете времени (обед может проставиться 0, даже если он был например минут 30)
+                today = self.cursor.execute("""
+                        SELECT start_day, start_dinner, end_dinner FROM report
+                        WHERE id = {id_record}
+                """.format(
+                        id_record = self.wd_id_record
+                )).fetchone()
+
+                start_day = report.date_datetime(today[0], mode = 'time')
+
+                if today[1] and today[2]:
+                        start_dinner = report.date_datetime(today[1], mode = 'time')
+                        end_dinner = report.date_datetime(today[2], mode = 'time')
+                        dinner_len = (end_dinner.date - start_dinner.date).seconds // 60
+
+                else:
+                        start_dinner, end_dinner = 0, 0
+                        dinner_len = 0
+
+                end_day = self.wd_end_day
+
+                day_len = (end_day.date - start_day.date).seconds // 60 - dinner_len
+                # Окончание костыля
+
                 if not self.user.testMode:
                         print('Тестовый режим не был включен, выполнена запись в БД')
                         try:
@@ -1567,7 +1616,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                                                 dinner_len = '{dinner_len}'
                                         WHERE id = {id_record}
                                 """.format(
-                                        end_day = self.wd_end_day.format_db,
+                                        end_day = end_day.format_db,
                                         day_len = day_len,
                                         dinner_len = dinner_len,
                                         id_record = self.wd_id_record
@@ -2384,6 +2433,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
         def add_user(self): # Активация при нажатии кнопки "Сохранить" пользователя на 2 вкладке
                 username = self.lineEdit_username.text()
                 login = self.lineEdit_login.text()
+                organization = self.lineEdit_organization.text()
                         
                 if not username: # Если ФИО не введено
                         self.lineEdit_username.setStyleSheet(self.styleSheet.input_text_error)
@@ -2391,7 +2441,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                 if not login: # Если логин не введен
                         self.lineEdit_login.setStyleSheet(self.styleSheet.input_text_error)
 
-                if username and login: # Если и ФИО и логин введены, то добавляем пользователя
+                if not organization: # Если не введена организация
+                        self.lineEdit_organization.setStyleSheet(self.styleSheet.input_text_error)
+
+                if username and login and organization: # Если и ФИО и логин введены, то добавляем пользователя
 
                         # Для начала проверяем, есть ли пользователь с таким логином
                         _ = self.cursor.execute('SELECT id FROM users WHERE login = "{login}"'.format(
@@ -2399,11 +2452,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                         )).fetchone()
 
                         if not _:
-                                self.user.add_user(login, username)
+                                self.user.add_user(login, username, organization)
                                 self.combobox_username.addItem( username )
 
                                 self.lineEdit_username.setText('')
                                 self.lineEdit_login.setText('')
+                                self.lineEdit_organization.setText('')
                         
                         elif _:
                                 self.lineEdit_login.setStyleSheet(self.styleSheet.input_text_full_error)
@@ -2421,6 +2475,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                 self.lineEdit_username.setStyleSheet(self.styleSheet.input_text)
                 self.lineEdit_login.setText('')
                 self.lineEdit_login.setStyleSheet(self.styleSheet.input_text)
+                self.lineEdit_organization.setText('')
+                self.lineEdit_organization.setStyleSheet(self.styleSheet.input_text)
 
 class Thread(QThread):
 

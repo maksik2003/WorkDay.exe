@@ -52,6 +52,9 @@ class date_datetime:
                     minute = int(date.split(' ')[1].split(':')[1])
                 )
 
+            else:
+                raise Exception('RegEx is not aviable')
+
         self.main()
 
     def main(self):
@@ -104,13 +107,19 @@ def generate(cursor, start_date, end_date, path_to_save):
 
     # Сбор ID пользователей, у которых параметр root.inReport = 1 (т.е. необходимо внести в отчет)
     user_inReport = cursor.execute("""
-        SELECT users.username FROM users, root 
+        SELECT users.username, users.ou_name FROM users, root 
         WHERE users.id = root.id_user AND root.inReport = 1
         ORDER BY users.username ASC
     """).fetchall()
 
     for user in user_inReport:
-        data[user[0]] = {}
+        if user[1]:
+            # Проверка чтобы организация была установлена
+            data[user[0]] = {'org': user[1]}
+
+        elif not user[1]:
+            data[user[0]] = {'org': 'Не установлена организация в БД'}
+            
 
     # Собираем дни, использованные в периоде
     # Далее они будут прописаны в кортеже для каждого сотрудника (если что это {})
@@ -300,9 +309,27 @@ def generate(cursor, start_date, end_date, path_to_save):
         right = side
     )
     ws['B2'].alignment = alignment
+
+    ws.merge_cells('A3:B3')
+    ws['A3'].font = font
+    ws['B3'].font = font
+    ws['A3'].border = Border(
+        top = side,
+        left = side,
+        bottom = side
+    )
+    ws['B3'].border = Border(
+        top = side,
+        right = side,
+        bottom = side
+    )
+    ws['A3'].alignment = alignment
+    ws['A3'].value = 'Организация'
+    
     ws.column_dimensions['A'].width = 10
     ws.column_dimensions['B'].width = 13.3
-    line = 2
+
+    line = 3
     week_list = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
 
     table_list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
@@ -339,6 +366,8 @@ def generate(cursor, start_date, end_date, path_to_save):
             ws[full_words[col] + '1'].style = 'main'
             ws[full_words[col] + '2'].value = 'Отработанное время, ч'
             ws[full_words[col] + '2'].style = 'main'
+            ws[full_words[col] + '3'].value = data[user]['org']
+            ws[full_words[col] + '3'].style = 'main'
             ws.column_dimensions[full_words[col]].width = 35
 
             if data[user][day]['isNotClosed']:

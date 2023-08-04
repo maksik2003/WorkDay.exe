@@ -13,6 +13,9 @@ class color_theme:
         self.blue    = '#75B2EF'
         self.grey    = '#808080'
 
+        self.green   = '#5ddf8b'
+        self.yellow  = '#dddf5d'
+
         self.text_color         = self.white
         self.background         = self.black
         self.rectangle          = self.brown

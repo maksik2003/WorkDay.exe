@@ -97,6 +97,60 @@ class Ui_error(object):
         def close(self):
                 self.close()
 
+class Ui_genReportForm(QtWidgets.QMainWindow, object):
+
+        def __init__(self):
+                super().__init__()
+                self.Ui_genReportShow(self)
+
+        def Ui_genReportShow(self, Form):
+                # super().__init__()
+
+                Form.setObjectName('Form')
+                w = 400
+                h = 225
+                Form.resize(w, h)
+                Form.setMinimumSize(QtCore.QSize(w, h))
+                Form.setMaximumSize(QtCore.QSize(w, h))
+
+                Form.setStyleSheet("""
+                        QWidget {{
+                                background-color: {background};
+                        }}
+                """.format(
+                        background = colors.background
+                ))
+
+                self.font = QtGui.QFont()
+                self.font.setFamily("Montserrat")
+                self.font.setPointSize(10)
+                self.font.setWeight(700)
+
+                self.btn_default_report = QtWidgets.QPushButton(Form)
+                self.btn_default_report.setEnabled(True)
+                self.btn_default_report.setGeometry(QtCore.QRect(50, 60, 300, 50))
+                self.btn_default_report.setFont(self.font)
+                self.btn_default_report.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+                self.btn_default_report.setObjectName("btn_default_report")
+                self.btn_default_report.setText('Стандартный отчет')
+
+                self.btn_special_report = QtWidgets.QPushButton(Form)
+                self.btn_special_report.setEnabled(True)
+                self.btn_special_report.setGeometry(QtCore.QRect(50, 125, 300, 50))
+                self.btn_special_report.setFont(self.font)
+                self.btn_special_report.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+                self.btn_special_report.setObjectName("btn_special_report")
+                self.btn_special_report.setText('Отчет для отдела кадров')
+
+                self.label = QtWidgets.QLabel(Form)
+                self.label.setGeometry(QtCore.QRect(0, 20, w, 20))
+                self.label.setFont(self.font)
+                self.label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+                self.label.setObjectName("label")
+                self.label.setText('Выберите нужный отчет')
+
+                Form.setWindowTitle('Выбор вида отчета')
+
 class Ui_Form(object):
         def setupUi(self, Form):
                 Form.setObjectName("Form")
@@ -1653,11 +1707,45 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                 self.show_edit_panel('clear')
                 self.lineEdit_delete_reason.setText('')
 
-        def generate_report(self): # Генерация отчета по отработке
-                self.label_errors.setText('Генерирование отчета может занять время')
+        def genDefaultReport(self, close: bool=False): # Генерация стандартногго отчета
+
                 path_to_save = QtWidgets.QFileDialog.getExistingDirectoryUrl().url()[8::]
-                report.generate(self.cursor, self.lineEdit_startdate.text(), self.lineEdit_enddate.text(), path_to_save)
-                self.label_errors.setText('')
+                if path_to_save:
+                        report.generate(self.cursor, self.lineEdit_startdate.text(), self.lineEdit_enddate.text(), path_to_save)
+
+                if close:
+                        self.genReportWindow.close()
+                
+        def genSpecialReport(self): # Генерация специального отчета отчета
+                ...
+
+        def generate_report(self): # Генерация отчета по отработке
+
+                date_start      = int(self.lineEdit_startdate.text()[3:5]), int(self.lineEdit_startdate.text()[6:])
+                date_end        = int(self.lineEdit_enddate.text()[3:5]), int(self.lineEdit_startdate.text()[6:])
+
+                isDateInOneMonth = date_start == date_end # Находятся ли дни в рамках одного месяца
+
+                # Проверяем уровень доступа человека, который выгружает отчет. Если есть доступ до специального отчета, то выводим окно с выбором отчета
+                if self.user.my_root_generalReport:
+                        self.genReportWindow = Ui_genReportForm()
+                        self.genReportWindow.show()
+                        self.genReportWindow.btn_default_report.setStyleSheet(self.styleSheet.btn)
+                        self.genReportWindow.btn_special_report.setStyleSheet(self.styleSheet.btn)
+                        self.genReportWindow.label.setStyleSheet(self.styleSheet.label_inverse)
+
+                        # Если период в разных месяцах, то блокируем генерацию отчета. Такой отчет может подаваться только в рамках одного месяца
+                        if not isDateInOneMonth:
+                                self.genReportWindow.label.setText('Период должен быть в одном месяце')
+                                self.genReportWindow.btn_special_report.setEnabled(False)
+                                self.genReportWindow.btn_special_report.setStyleSheet(self.styleSheet.btn_off)
+                                self.genReportWindow.label.setStyleSheet(self.styleSheet.label_error)
+
+                        self.genReportWindow.btn_default_report.clicked.connect(lambda ch: self.genDefaultReport(close = True))
+                        self.genReportWindow.btn_special_report.clicked.connect(lambda ch: self.genSpecialReport())
+
+                else:
+                        self.genDefaultReport()
 
         def deleteDate_changed(self): # Изменен текст в причине удаления даты
                 text = self.lineEdit_delete_reason.text()
@@ -2477,6 +2565,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                 self.lineEdit_login.setStyleSheet(self.styleSheet.input_text)
                 self.lineEdit_organization.setText('')
                 self.lineEdit_organization.setStyleSheet(self.styleSheet.input_text)
+
+        def close(self):
+                self.close()
 
 class Thread(QThread):
 

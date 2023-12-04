@@ -920,8 +920,8 @@ class Ui_Form(object):
 
                 self.status_title.setText('Статусы')
 
-# Путь до БД, расположен на хомяке it_lunatic (возможно далее будет изменен)
-database_path = r'\\x3.corp.motiv\support$\it_lunatic\Разработка\Python\workday.sqlite'
+# Путь до БД
+database_path = r'workday.sqlite'
 
 class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
         def __init__(self):

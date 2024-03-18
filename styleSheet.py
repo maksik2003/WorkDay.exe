@@ -85,6 +85,7 @@ class styleSheet:
                 background-color: {rectangle};
                 border-radius: 10px;
                 color: {text_color};
+                outline: 0;
             }}
 
             QPushButton:hover {{
@@ -103,6 +104,7 @@ class styleSheet:
                 background-color: {rectangle};
                 border-radius: 10px;
                 color: {non_active_color};
+                outline: 0;
             }}
         """.format(
             rectangle = colors.rectangle,
@@ -114,6 +116,7 @@ class styleSheet:
                 background-color: {rectangle};
                 border-radius: 10px;
                 color: {hover_negative};
+                outline: 0;
             }}
 
             QPushButton:hover {{
@@ -130,6 +133,7 @@ class styleSheet:
                 background-color: {background};
                 border-radius: 10px;
                 color: {text_color_inverse};
+                outline: 0;
             }}
 
             QPushButton:hover {{
@@ -146,6 +150,7 @@ class styleSheet:
             QPushButton {{
                 background-color: {background};
                 border-radius: 10px;
+                outline: 0;
                 color: {non_active_color};
             }}
 
@@ -330,9 +335,10 @@ class styleSheet:
 
         # Checkbox
         self.checkbox = """
-            QCheckBox:active {{
+            QCheckBox {{
                 color: {text_color};
                 background-color: transparent;
+                outline: 0;
             }}
 
             QCheckBox::indicator {{
@@ -354,9 +360,10 @@ class styleSheet:
         )
 
         self.checkbox_error = """
-            QCheckBox:active {{
+            QCheckBox {{
                 color: {hover_negative};
                 background-color: transparent;
+                outline: 0;
             }}
 
             QCheckBox::indicator {{
@@ -378,9 +385,10 @@ class styleSheet:
         )
 
         self.checkbox_not_active = """
-                QCheckBox:active {{
+                QCheckBox {{
                         color: {non_active_color};
                         background-color: transparent;
+                        outline: 0;
                 }}
 
                 QCheckBox::indicator {{
@@ -401,6 +409,7 @@ class styleSheet:
                 border-radius: 10px;
                 color: {text_color};
                 padding: 10px;
+                outline: 0;
             }}
 
             QComboBox:hover {{

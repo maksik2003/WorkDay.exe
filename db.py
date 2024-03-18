@@ -27,7 +27,7 @@ class user():
 
         self.testMode = False            # Тестовый режим (имитация логина + нету записи на кнопках WorkDay)
         if self.testMode:
-            self.my_login = 'it_khan' # Имитация логина, для тестов
+            self.my_login = 'it_lunatic' # Имитация логина, для тестов
         # self.my_login = 'it_vsy'
 
         if self.my_login.lower() == "Maksim".lower(): # If app started with home PC 
@@ -39,12 +39,14 @@ class user():
             self.my_username = self.my_info[1]
 
             # set user roots
-            self.my_root_list = self.cursor.execute("SELECT start_day, report, admin, inReport, generalReport FROM root WHERE id_user = {id_user}".format(id_user = self.my_id)).fetchone()
+            self.my_root_list = self.cursor.execute("SELECT start_day, report, admin, inReport, generalReport, hidden_software_r, hidden_software_rw FROM root WHERE id_user = {id_user}".format(id_user = self.my_id)).fetchone()
             self.my_root_startday = int(self.my_root_list[0])       # Can i start day
             self.my_root_report = int(self.my_root_list[1])         # Can i check all reports and edit his
             self.my_root_admin = int(self.my_root_list[2])          # If i admin (can edit users and all that can if you have root "report")
             self.my_root_inReport = int(self.my_root_list[3])       # If true, that i show in report
             self.my_root_generalReport = int(self.my_root_list[4])       # If true, that i show in report
+            self.my_root_hidden_software_r = int(self.my_root_list[5])       # If true, mean that user can read and add new PC when installed hidden software
+            self.my_root_hidden_software_rw = int(self.my_root_list[6])       # If true, mean that user can edit PC when installed hidden software
         
     def error(self, error: str):
         error = str(datetime.datetime.now()) + ' ' + error
@@ -104,20 +106,22 @@ class user():
 
         return year + '-' + month + '-' + day + ' ' + hour + ':' + minute
 
-    def add_user(self, login: str, username: str, organization: str):
+    def add_user(self, login: str, username: str, organization: str, birthday: str):
         if self.my_root_admin:
             try:
                 self.cursor.execute(
                     """
-                        INSERT INTO users(login, username, ou_name) VALUES(
+                        INSERT INTO users(login, username, ou_name, birthday) VALUES(
                             "{login}",
                             "{username}",
-                            "{organization}"
+                            "{organization}",
+                            "{birthday}"
                         )
                     """.format(
                         login = login,
                         username = username,
-                        organization = organization
+                        organization = organization,
+                        birthday = birthday.split('.')[2] + '-' + birthday.split('.')[1] + '-' + birthday.split('.')[0]
                     )
                 )
                 self.connect.commit()
@@ -136,7 +140,7 @@ class user():
                 self.connect.commit()
 
                 now = datetime.datetime.now()
-                new_value = 'Login: ' + login + ' | Username: ' + username + ' | Organization: ' + organization
+                new_value = 'Login: ' + login + ' | Username: ' + username + ' | Organization: ' + organization + ' | Birthday: ' + birthday
                 self.insert_log(id_user = self.my_id, time = self.time_to_db(now), param = 'Add user', new_value = new_value)
 
             except Exception as error:
@@ -149,7 +153,7 @@ class user():
                 table = 'users'
                 col_name = 'id'
 
-            elif param.lower() in ['start_day', 'report', 'admin', 'inreport']:
+            elif param.lower() in ['start_day', 'report', 'admin', 'inreport', 'generalreport', 'hidden_software_r', 'hidden_software_rw']:
                 table = 'root'
                 col_name = 'id_user'
                 new_value = int(new_value)
@@ -217,7 +221,8 @@ class user():
                     )
                     self.connect.commit()
 
-                    self.insert_log(id_user = self.my_id, time = self.time_to_db( datetime.datetime.now() ), param = 'Changed record time', last_value = old_value, new_value = new_value)
+                    param = 'Changed record time ' + str(id_record)
+                    self.insert_log(id_user = self.my_id, time = self.time_to_db( datetime.datetime.now() ), param = param, last_value = old_value, new_value = new_value)
             
             except Exception as error:
                 self.error( str(error) )

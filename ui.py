@@ -15,8 +15,11 @@ import report
 from socket import gethostname
 import os.path, os
 
+import hiddenSoft_report
+from vacations import Vacation
+
 colors = color.color_theme()
-APP_VERSION = 7
+APP_VERSION = 10
 APP_NAME = 'WorkDay'
 
 class Ui_error(object):
@@ -78,7 +81,6 @@ class Ui_error(object):
                 self.btn.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
                 self.btn.setStyleSheet(self.styleSheet.btn)
                 self.btn.setObjectName("btn")
-                self.btn.clicked.connect(self.close)
 
                 self.retranslateUi_error(Widget)
 
@@ -92,10 +94,6 @@ class Ui_error(object):
                 os.system('explorer.exe "{path}"'.format(
                         path = path
                 ))
-
-
-        def close(self):
-                self.close()
 
 class Ui_genReportForm(QtWidgets.QMainWindow, object):
 
@@ -126,17 +124,19 @@ class Ui_genReportForm(QtWidgets.QMainWindow, object):
                 self.font.setPointSize(10)
                 self.font.setWeight(700)
 
+                y = 60
                 self.btn_default_report = QtWidgets.QPushButton(Form)
                 self.btn_default_report.setEnabled(True)
-                self.btn_default_report.setGeometry(QtCore.QRect(50, 60, 300, 50))
+                self.btn_default_report.setGeometry(QtCore.QRect(50, y, 300, 50))
                 self.btn_default_report.setFont(self.font)
                 self.btn_default_report.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
                 self.btn_default_report.setObjectName("btn_default_report")
                 self.btn_default_report.setText('Стандартный отчет')
 
+                y += 65
                 self.btn_special_report = QtWidgets.QPushButton(Form)
                 self.btn_special_report.setEnabled(True)
-                self.btn_special_report.setGeometry(QtCore.QRect(50, 125, 300, 50))
+                self.btn_special_report.setGeometry(QtCore.QRect(50, y, 300, 50))
                 self.btn_special_report.setFont(self.font)
                 self.btn_special_report.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
                 self.btn_special_report.setObjectName("btn_special_report")
@@ -549,24 +549,6 @@ class Ui_Form(object):
                 self.label_permissions_title.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                 self.label_permissions_title.setObjectName("label_permissions_title")
 
-                self.checkbox_report = QtWidgets.QCheckBox(self.users)
-                self.checkbox_report.setGeometry(QtCore.QRect(20, 70, 200, 41))
-                self.checkbox_report.setFont(self.font)
-                self.checkbox_report.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-                self.checkbox_report.setStyleSheet(self.styleSheet.checkbox)
-                self.checkbox_report.setCheckable(True)
-                self.checkbox_report.setChecked(False)
-                self.checkbox_report.setObjectName("checkbox_report")
-
-                self.checkbox_inreport = QtWidgets.QCheckBox(self.users)
-                self.checkbox_inreport.setGeometry(QtCore.QRect(20, 130, 200, 41))
-                self.checkbox_inreport.setFont(self.font)
-                self.checkbox_inreport.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-                self.checkbox_inreport.setStyleSheet(self.styleSheet.checkbox)
-                self.checkbox_inreport.setCheckable(True)
-                self.checkbox_inreport.setChecked(False)
-                self.checkbox_inreport.setObjectName("checkbox_inreport")
-
                 self.checkbox_start_day = QtWidgets.QCheckBox(self.users)
                 self.checkbox_start_day.setGeometry(QtCore.QRect(20, 40, 200, 41))
                 self.checkbox_start_day.setFont(self.font)
@@ -576,8 +558,17 @@ class Ui_Form(object):
                 self.checkbox_start_day.setChecked(False)
                 self.checkbox_start_day.setObjectName("checkbox_start_day")
 
+                self.checkbox_report = QtWidgets.QCheckBox(self.users)
+                self.checkbox_report.setGeometry(QtCore.QRect(20, 60+10, 200, 41))
+                self.checkbox_report.setFont(self.font)
+                self.checkbox_report.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+                self.checkbox_report.setStyleSheet(self.styleSheet.checkbox)
+                self.checkbox_report.setCheckable(True)
+                self.checkbox_report.setChecked(False)
+                self.checkbox_report.setObjectName("checkbox_report")
+
                 self.checkbox_admin = QtWidgets.QCheckBox(self.users)
-                self.checkbox_admin.setGeometry(QtCore.QRect(20, 100, 200, 41))
+                self.checkbox_admin.setGeometry(QtCore.QRect(20, 80+20, 200, 41))
                 self.checkbox_admin.setFont(self.font)
                 self.checkbox_admin.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
                 self.checkbox_admin.setStyleSheet(self.styleSheet.checkbox)
@@ -585,16 +576,52 @@ class Ui_Form(object):
                 self.checkbox_admin.setChecked(False)
                 self.checkbox_admin.setObjectName("checkbox_admin")
 
+                self.checkbox_inreport = QtWidgets.QCheckBox(self.users)
+                self.checkbox_inreport.setGeometry(QtCore.QRect(20, 100+30, 200, 41))
+                self.checkbox_inreport.setFont(self.font)
+                self.checkbox_inreport.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+                self.checkbox_inreport.setStyleSheet(self.styleSheet.checkbox)
+                self.checkbox_inreport.setCheckable(True)
+                self.checkbox_inreport.setChecked(False)
+                self.checkbox_inreport.setObjectName("checkbox_inreport")
+
+                self.checkbox_hiddenSoft_R = QtWidgets.QCheckBox(self.users)
+                self.checkbox_hiddenSoft_R.setGeometry(QtCore.QRect(20, 120+40, 200, 41))
+                self.checkbox_hiddenSoft_R.setFont(self.font)
+                self.checkbox_hiddenSoft_R.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+                self.checkbox_hiddenSoft_R.setStyleSheet(self.styleSheet.checkbox)
+                self.checkbox_hiddenSoft_R.setCheckable(True)
+                self.checkbox_hiddenSoft_R.setChecked(False)
+                self.checkbox_hiddenSoft_R.setObjectName("checkbox_hiddenSoft_R")
+
+                self.checkbox_hiddenSoft_RW = QtWidgets.QCheckBox(self.users)
+                self.checkbox_hiddenSoft_RW.setGeometry(QtCore.QRect(20, 140+50, 200, 41))
+                self.checkbox_hiddenSoft_RW.setFont(self.font)
+                self.checkbox_hiddenSoft_RW.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+                self.checkbox_hiddenSoft_RW.setStyleSheet(self.styleSheet.checkbox)
+                self.checkbox_hiddenSoft_RW.setCheckable(True)
+                self.checkbox_hiddenSoft_RW.setChecked(False)
+                self.checkbox_hiddenSoft_RW.setObjectName("checkbox_hiddenSoft_RW")
+
+                self.checkbox_specialReport = QtWidgets.QCheckBox(self.users)
+                self.checkbox_specialReport.setGeometry(QtCore.QRect(20, 160+60, 200, 41))
+                self.checkbox_specialReport.setFont(self.font)
+                self.checkbox_specialReport.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+                self.checkbox_specialReport.setStyleSheet(self.styleSheet.checkbox)
+                self.checkbox_specialReport.setCheckable(True)
+                self.checkbox_specialReport.setChecked(False)
+                self.checkbox_specialReport.setObjectName("checkbox_specialReport")
+
                 self.btn_adduser_save = QtWidgets.QPushButton(self.users)
                 self.btn_adduser_save.setEnabled(True)
-                self.btn_adduser_save.setGeometry(QtCore.QRect(370, 300, 220, 30))
+                self.btn_adduser_save.setGeometry(QtCore.QRect(370, 260, 220, 30))
                 self.btn_adduser_save.setFont(self.font)
                 self.btn_adduser_save.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
                 self.btn_adduser_save.setStyleSheet(self.styleSheet.inverse_btn)
                 self.btn_adduser_save.setObjectName("btn_adduser_save")
 
                 self.label_permissions_bg = QtWidgets.QLabel(self.users)
-                self.label_permissions_bg.setGeometry(QtCore.QRect(10, 10, 330, 200))
+                self.label_permissions_bg.setGeometry(QtCore.QRect(10, 10, 330, 230+60))
                 self.label_permissions_bg.setStyleSheet(self.styleSheet.label_bg)
                 self.label_permissions_bg.setObjectName("label_permissions_bg")
 
@@ -606,7 +633,7 @@ class Ui_Form(object):
 
                 self.btn_adduser_cancel = QtWidgets.QPushButton(self.users)
                 self.btn_adduser_cancel.setEnabled(True)
-                self.btn_adduser_cancel.setGeometry(QtCore.QRect(600, 300, 80, 30))
+                self.btn_adduser_cancel.setGeometry(QtCore.QRect(600, 260, 80, 30))
                 self.btn_adduser_cancel.setFont(self.font)
                 self.btn_adduser_cancel.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
                 self.btn_adduser_cancel.setStyleSheet(self.styleSheet.inverse_btn)
@@ -631,13 +658,21 @@ class Ui_Form(object):
                 self.lineEdit_organization.setStyleSheet(self.styleSheet.input_text)
                 self.lineEdit_organization.setObjectName("lineEdit_organization")
 
+                self.lineEdit_birthday = QtWidgets.QLineEdit(self.users)
+                self.lineEdit_birthday.setGeometry(QtCore.QRect(370, 200, 310, 40))
+                self.lineEdit_birthday.setFont(lineEdit_font)
+                self.lineEdit_birthday.setStyleSheet(self.styleSheet.input_text)
+                self.lineEdit_birthday.setObjectName("lineEdit_birthday")
+                self.lineEdit_birthday.setMaxLength(10)
+
                 self.label_adduser_bg = QtWidgets.QLabel(self.users)
-                self.label_adduser_bg.setGeometry(QtCore.QRect(360, 10, 330, 330))
+                self.label_adduser_bg.setGeometry(QtCore.QRect(360, 10, 330, 290))
                 self.label_adduser_bg.setStyleSheet(self.styleSheet.label_bg)
                 self.label_adduser_bg.setObjectName("label_adduser_bg")
 
                 self.label_adduser_bg.raise_()
                 self.lineEdit_organization.raise_()
+                self.lineEdit_birthday.raise_()
                 self.label_permissions_bg.raise_()
                 self.label_add_user_title.raise_()
                 self.label_permissions_title.raise_()
@@ -651,6 +686,10 @@ class Ui_Form(object):
                 self.lineEdit_login.raise_()
                 self.label_edit_title.raise_()
                 self.label_edit_date.raise_()
+                self.checkbox_hiddenSoft_R.raise_()
+                self.checkbox_hiddenSoft_RW.raise_()
+                self.checkbox_specialReport.raise_()
+
                 self.tabWidget.addTab(self.users, "")
                 self.combobox_username = QtWidgets.QComboBox(Form)
                 self.combobox_username.setGeometry(QtCore.QRect(20, 20, 330, 50))
@@ -679,7 +718,7 @@ class Ui_Form(object):
 
                 self.btn_changeuser_save = QtWidgets.QPushButton(self.users)
                 self.btn_changeuser_save.setEnabled(True)
-                self.btn_changeuser_save.setGeometry(QtCore.QRect(20, 170, 210, 30))
+                self.btn_changeuser_save.setGeometry(QtCore.QRect(20, 200+60, 210, 30))
                 self.btn_changeuser_save.setFont(self.font)
                 self.btn_changeuser_save.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
                 self.btn_changeuser_save.setStyleSheet(self.styleSheet.inverse_btn)
@@ -687,40 +726,41 @@ class Ui_Form(object):
 
                 self.btn_changeuser_cancel = QtWidgets.QPushButton(self.users)
                 self.btn_changeuser_cancel.setEnabled(True)
-                self.btn_changeuser_cancel.setGeometry(QtCore.QRect(240, 170, 90, 30))
+                self.btn_changeuser_cancel.setGeometry(QtCore.QRect(240, 200+60, 90, 30))
                 self.btn_changeuser_cancel.setFont(self.font)
                 self.btn_changeuser_cancel.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
                 self.btn_changeuser_cancel.setStyleSheet(self.styleSheet.inverse_btn)
                 self.btn_changeuser_cancel.setObjectName("btn_changeuser_cancel")
 
                 self.label_deluser_bg = QtWidgets.QLabel(self.users)
-                self.label_deluser_bg.setGeometry(QtCore.QRect(10, 220, 330, 120))
+                self.label_deluser_bg.setGeometry(QtCore.QRect(10, 290+20, 330, 120))
                 self.label_deluser_bg.setFont(self.font)
                 self.label_deluser_bg.setStyleSheet(self.styleSheet.label_bg)
                 self.label_deluser_bg.setObjectName("label_deluser_bg")
 
                 self.label_deluser_title = QtWidgets.QLabel(self.users)
-                self.label_deluser_title.setGeometry(QtCore.QRect(10, 230, 330, 20))
+                self.label_deluser_title.setGeometry(QtCore.QRect(10, 300+20, 330, 20))
                 self.label_deluser_title.setFont(self.font)
                 self.label_deluser_title.setStyleSheet(self.styleSheet.label_text)
                 self.label_deluser_title.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                 self.label_deluser_title.setObjectName("label_deluser_title")
 
                 self.lineEdit_deluser_reason = QtWidgets.QLineEdit(self.users)
-                self.lineEdit_deluser_reason.setGeometry(QtCore.QRect(20, 260, 310, 30))
+                self.lineEdit_deluser_reason.setGeometry(QtCore.QRect(20, 330+20, 310, 30))
                 self.lineEdit_deluser_reason.setFont(lineEdit_font)
                 self.lineEdit_deluser_reason.setStyleSheet(self.styleSheet.input_text)
                 self.lineEdit_deluser_reason.setObjectName("lineEdit_deluser_reason")
 
                 self.btn_deleteuser = QtWidgets.QPushButton(self.users)
                 self.btn_deleteuser.setEnabled(True)
-                self.btn_deleteuser.setGeometry(QtCore.QRect(20, 300, 170, 30))
+                self.btn_deleteuser.setGeometry(QtCore.QRect(20, 370+20, 170, 30))
                 self.btn_deleteuser.setFont(self.font)
                 self.btn_deleteuser.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
                 self.btn_deleteuser.setStyleSheet(self.styleSheet.inverse_btn)
                 self.btn_deleteuser.setObjectName("btn_deleteuser")
 
                 self.tab_workday()
+                self.tab_hidden_software()
                 self.retranslateUi(Form)
                 self.tabWidget.setCurrentIndex(0)
                 QtCore.QMetaObject.connectSlotsByName(Form)
@@ -837,6 +877,252 @@ class Ui_Form(object):
                 self.status_title.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeading|QtCore.Qt.AlignmentFlag.AlignHCenter|QtCore.Qt.AlignmentFlag.AlignVCenter)
                 self.status_title.setObjectName("status_title")
 
+        def tab_hidden_software(self):
+                self.hidden_software = QtWidgets.QWidget()
+                self.hidden_software.setObjectName('hidden_software')
+                self.tabWidget.addTab(self.hidden_software, '')
+
+                self.label_find_bg = QtWidgets.QLabel(self.hidden_software)
+                self.label_find_bg.setGeometry(QtCore.QRect(10, 10, 400, 40))
+                self.label_find_bg.setObjectName("label_find_bg")
+                self.label_find_bg.setStyleSheet(self.styleSheet.label_bg)
+
+                self.label_find = QtWidgets.QLabel(self.hidden_software)
+                self.label_find.setGeometry(QtCore.QRect(10, 10, 80, 40))
+                self.label_find.setFont(self.font)
+                self.label_find.setStyleSheet(self.styleSheet.label_text)
+                self.label_find.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+                self.label_find.setObjectName("label_period")
+                self.label_find.setText("Поиск:")
+
+                lineEdit_FindFont = QtGui.QFont()
+                lineEdit_FindFont.setFamily("Montserrat")
+                lineEdit_FindFont.setWeight(700)
+
+                self.lineEdit_find = QtWidgets.QLineEdit(self.hidden_software)
+                self.lineEdit_find.setGeometry(QtCore.QRect(90, 15, 310, 30))
+                self.lineEdit_find.setFont(lineEdit_FindFont)
+                self.lineEdit_find.setStyleSheet(self.styleSheet.input_text)
+                self.lineEdit_find.setMaxLength(8)
+                self.lineEdit_find.setCursorPosition(0)
+                self.lineEdit_find.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+                self.lineEdit_find.setObjectName("lineEdit_find")
+                self.lineEdit_find.setPlaceholderText("Имя ПК")
+
+                self.label_FindResult_bg = QtWidgets.QLabel(self.hidden_software)
+                self.label_FindResult_bg.setGeometry(QtCore.QRect(10, 60, 150, 350))
+                self.label_FindResult_bg.setStyleSheet(self.styleSheet.label_bg)
+                self.label_FindResult_bg.setObjectName("label_FindResult_bg")
+
+                self.btn_addHiddenPC = QtWidgets.QPushButton(self.hidden_software)
+                self.btn_addHiddenPC.setGeometry(QtCore.QRect(419, 10, 130, 40))
+                self.btn_addHiddenPC.setFont(self.font)
+                self.btn_addHiddenPC.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+                self.btn_addHiddenPC.setStyleSheet(self.styleSheet.btn_off)
+                self.btn_addHiddenPC.setEnabled(False)
+                self.btn_addHiddenPC.setObjectName("btn_addHiddenPC")
+                self.btn_addHiddenPC.setText("Добавить ПК")
+
+                self.label_title_findResults = QtWidgets.QLabel(self.hidden_software)
+                self.label_title_findResults.setGeometry(QtCore.QRect(10, 60, 150, 40))
+                self.label_title_findResults.setFont(self.font)
+                self.label_title_findResults.setStyleSheet(self.styleSheet.label_text)
+                self.label_title_findResults.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+                self.label_title_findResults.setObjectName("label_title_findResults")
+                self.label_title_findResults.setText('Введите запрос')
+
+                self.btn_generateReportHiddenSoft = QtWidgets.QPushButton(self.hidden_software)
+                self.btn_generateReportHiddenSoft.setGeometry(QtCore.QRect(560, 10, 130, 40))
+                self.btn_generateReportHiddenSoft.setFont(self.font)
+                self.btn_generateReportHiddenSoft.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+                self.btn_generateReportHiddenSoft.setObjectName("btn_generateReportHiddenSoft")
+                self.btn_generateReportHiddenSoft.setStyleSheet(self.styleSheet.btn_off)
+                self.btn_generateReportHiddenSoft.setEnabled(False)
+                self.btn_generateReportHiddenSoft.setText('Excel отчет')
+
+                self.label_PCInfo_bg = QtWidgets.QLabel(self.hidden_software)
+                self.label_PCInfo_bg.setGeometry(QtCore.QRect(170, 60, 520, 270))
+                self.label_PCInfo_bg.setStyleSheet(self.styleSheet.label_bg)
+                self.label_PCInfo_bg.setObjectName("label_PCInfo_bg")
+
+                self.label_title_PCInfo = QtWidgets.QLabel(self.hidden_software)
+                self.label_title_PCInfo.setGeometry(QtCore.QRect(170, 60, 520, 40))
+                self.label_title_PCInfo.setFont(self.font)
+                self.label_title_PCInfo.setStyleSheet(self.styleSheet.label_text)
+                self.label_title_PCInfo.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+                self.label_title_PCInfo.setObjectName("label_title_PCInfo")
+                self.label_title_PCInfo.setText('Выберите ПК')
+
+                self.label_whenPCadd = QtWidgets.QLabel(self.hidden_software)
+                self.label_whenPCadd.setGeometry(QtCore.QRect(180, 100, 520, 40))
+                self.label_whenPCadd.setFont(self.font)
+                self.label_whenPCadd.setStyleSheet(self.styleSheet.label_text)
+                self.label_whenPCadd.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+                self.label_whenPCadd.setObjectName("label_whenPCadd")
+
+                self.label_whoAddPC = QtWidgets.QLabel(self.hidden_software)
+                self.label_whoAddPC.setGeometry(QtCore.QRect(180, 120, 520, 40))
+                self.label_whoAddPC.setFont(self.font)
+                self.label_whoAddPC.setStyleSheet(self.styleSheet.label_text)
+                self.label_whoAddPC.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+                self.label_whoAddPC.setObjectName("label_whoAddPC")
+
+                self.label_whenPCadd_time = QtWidgets.QLabel(self.hidden_software)
+                self.label_whenPCadd_time.setGeometry(QtCore.QRect(180, 100, 500, 40))
+                self.label_whenPCadd_time.setFont(self.font)
+                self.label_whenPCadd_time.setStyleSheet(self.styleSheet.label_text)
+                self.label_whenPCadd_time.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
+                self.label_whenPCadd_time.setObjectName("label_whenPCadd_time")
+
+                self.label_whoAddPC_username = QtWidgets.QLabel(self.hidden_software)
+                self.label_whoAddPC_username.setGeometry(QtCore.QRect(180, 120, 500, 40))
+                self.label_whoAddPC_username.setFont(self.font)
+                self.label_whoAddPC_username.setStyleSheet(self.styleSheet.label_text)
+                self.label_whoAddPC_username.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
+                self.label_whoAddPC_username.setObjectName("label_whoAddPC_username")
+
+                self.label_AddPC_namePC = QtWidgets.QLabel(self.hidden_software)
+                self.label_AddPC_namePC.setGeometry(QtCore.QRect(180, 110, 120, 30))
+                self.label_AddPC_namePC.setFont(self.font)
+                self.label_AddPC_namePC.setStyleSheet(self.styleSheet.label_text)
+                self.label_AddPC_namePC.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+                self.label_AddPC_namePC.setObjectName("label_AddPC_namePC")
+                self.label_AddPC_namePC.setText('Имя ПК')
+                self.label_AddPC_namePC.setHidden(True)
+
+                self.lineEdit_AddPC_namePC = QtWidgets.QLineEdit(self.hidden_software)
+                self.lineEdit_AddPC_namePC.setGeometry(QtCore.QRect(330, 105, 350, 30))
+                self.lineEdit_AddPC_namePC.setFont(lineEdit_FindFont)
+                self.lineEdit_AddPC_namePC.setStyleSheet(self.styleSheet.input_text)
+                self.lineEdit_AddPC_namePC.setCursorPosition(0)
+                self.lineEdit_AddPC_namePC.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+                self.lineEdit_AddPC_namePC.setObjectName("lineEdit_AddPC_namePC")
+                self.lineEdit_AddPC_namePC.setPlaceholderText("Имя ПК")
+                self.lineEdit_AddPC_namePC.setHidden(True)
+                self.lineEdit_AddPC_namePC.setMaxLength(8)
+
+                self.label_AddressPC = QtWidgets.QLabel(self.hidden_software)
+                self.label_AddressPC.setGeometry(QtCore.QRect(180, 145, 120, 30))
+                self.label_AddressPC.setFont(self.font)
+                self.label_AddressPC.setStyleSheet(self.styleSheet.label_text)
+                self.label_AddressPC.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+                self.label_AddressPC.setObjectName("label_AddressPC")
+                self.label_AddressPC.setText('Адрес:')
+                self.label_AddressPC.setHidden(True)
+
+                self.lineEdit_AddressPC = QtWidgets.QLineEdit(self.hidden_software)
+                self.lineEdit_AddressPC.setGeometry(QtCore.QRect(330, 140, 350, 30))
+                self.lineEdit_AddressPC.setFont(lineEdit_FindFont)
+                self.lineEdit_AddressPC.setStyleSheet(self.styleSheet.input_text)
+                self.lineEdit_AddressPC.setCursorPosition(0)
+                self.lineEdit_AddressPC.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+                self.lineEdit_AddressPC.setObjectName("lineEdit_AddressPC")
+                self.lineEdit_AddressPC.setPlaceholderText("Адрес установки")
+                self.lineEdit_AddressPC.setHidden(True)
+
+                self.label_PCusername = QtWidgets.QLabel(self.hidden_software)
+                self.label_PCusername.setGeometry(QtCore.QRect(180, 180, 120, 30))
+                self.label_PCusername.setFont(self.font)
+                self.label_PCusername.setStyleSheet(self.styleSheet.label_text)
+                self.label_PCusername.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+                self.label_PCusername.setObjectName("label_PCusername")
+                self.label_PCusername.setText('Пользователь:')
+                self.label_PCusername.setHidden(True)
+
+                self.lineEdit_PCusername = QtWidgets.QLineEdit(self.hidden_software)
+                self.lineEdit_PCusername.setGeometry(QtCore.QRect(330, 175, 350, 30))
+                self.lineEdit_PCusername.setFont(lineEdit_FindFont)
+                self.lineEdit_PCusername.setStyleSheet(self.styleSheet.input_text)
+                self.lineEdit_PCusername.setCursorPosition(0)
+                self.lineEdit_PCusername.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+                self.lineEdit_PCusername.setObjectName("lineEdit_PCusername")
+                self.lineEdit_PCusername.setPlaceholderText("ФИО пользователя")
+                self.lineEdit_PCusername.setHidden(True)
+
+                self.label_PCcase = QtWidgets.QLabel(self.hidden_software)
+                self.label_PCcase.setGeometry(QtCore.QRect(180, 215, 120, 30))
+                self.label_PCcase.setFont(self.font)
+                self.label_PCcase.setStyleSheet(self.styleSheet.label_text)
+                self.label_PCcase.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+                self.label_PCcase.setObjectName("label_PCcase")
+                self.label_PCcase.setText('Кейс:')
+                self.label_PCcase.setHidden(True)
+
+                self.lineEdit_PCcase = QtWidgets.QLineEdit(self.hidden_software)
+                self.lineEdit_PCcase.setGeometry(QtCore.QRect(330, 210, 350, 30))
+                self.lineEdit_PCcase.setFont(lineEdit_FindFont)
+                self.lineEdit_PCcase.setStyleSheet(self.styleSheet.input_text)
+                self.lineEdit_PCcase.setCursorPosition(0)
+                self.lineEdit_PCcase.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+                self.lineEdit_PCcase.setObjectName("lineEdit_PCcase")
+                self.lineEdit_PCcase.setPlaceholderText("Номер кейса")
+                self.lineEdit_PCcase.setHidden(True)
+
+                self.label_PCsoft = QtWidgets.QLabel(self.hidden_software)
+                self.label_PCsoft.setGeometry(QtCore.QRect(180, 250, 120, 30))
+                self.label_PCsoft.setFont(self.font)
+                self.label_PCsoft.setStyleSheet(self.styleSheet.label_text)
+                self.label_PCsoft.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+                self.label_PCsoft.setObjectName("label_PCsoft")
+                self.label_PCsoft.setText('Программы:')
+                self.label_PCsoft.setHidden(True)
+
+                self.lineEdit_PCsoft = QtWidgets.QLineEdit(self.hidden_software)
+                self.lineEdit_PCsoft.setGeometry(QtCore.QRect(330, 245, 350, 30))
+                self.lineEdit_PCsoft.setFont(lineEdit_FindFont)
+                self.lineEdit_PCsoft.setStyleSheet(self.styleSheet.input_text)
+                self.lineEdit_PCsoft.setCursorPosition(0)
+                self.lineEdit_PCsoft.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+                self.lineEdit_PCsoft.setObjectName("lineEdit_PCsoft")
+                self.lineEdit_PCsoft.setPlaceholderText("Название ПО")
+                self.lineEdit_PCsoft.setHidden(True)
+
+                self.btn_savePC = QtWidgets.QPushButton(self.hidden_software)
+                self.btn_savePC.setEnabled(True)
+                self.btn_savePC.setGeometry(QtCore.QRect(430, 290, 120, 30))
+                self.btn_savePC.setFont(self.font)
+                self.btn_savePC.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+                self.btn_savePC.setStyleSheet(self.styleSheet.inverse_btn)
+                self.btn_savePC.setObjectName("btn_savePC")
+                self.btn_savePC.setText("Сохранить")
+                self.btn_savePC.setHidden(True)
+
+                self.btn_cancelPC = QtWidgets.QPushButton(self.hidden_software)
+                self.btn_cancelPC.setEnabled(True)
+                self.btn_cancelPC.setGeometry(QtCore.QRect(560, 290, 120, 30))
+                self.btn_cancelPC.setFont(self.font)
+                self.btn_cancelPC.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+                self.btn_cancelPC.setStyleSheet(self.styleSheet.inverse_btn)
+                self.btn_cancelPC.setObjectName("btn_cancelPC")
+                self.btn_cancelPC.setText("Отмена")
+                self.btn_cancelPC.setHidden(True)
+
+                self.label_PCdelete_bg = QtWidgets.QLabel(self.hidden_software)
+                self.label_PCdelete_bg.setGeometry(QtCore.QRect(170, 340, 520, 50))
+                self.label_PCdelete_bg.setStyleSheet(self.styleSheet.label_bg)
+                self.label_PCdelete_bg.setObjectName("label_PCdelete_bg")
+                self.label_PCdelete_bg.setHidden(True)
+
+                self.lineEdit_PCdelete = QtWidgets.QLineEdit(self.hidden_software)
+                self.lineEdit_PCdelete.setGeometry(QtCore.QRect(180, 350, 370, 30))
+                self.lineEdit_PCdelete.setFont(lineEdit_FindFont)
+                self.lineEdit_PCdelete.setStyleSheet(self.styleSheet.input_text)
+                self.lineEdit_PCdelete.setCursorPosition(0)
+                self.lineEdit_PCdelete.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+                self.lineEdit_PCdelete.setObjectName("lineEdit_PCsoft")
+                self.lineEdit_PCdelete.setPlaceholderText("Причина удаления")
+                self.lineEdit_PCdelete.setHidden(True)
+
+                self.btn_deletePC = QtWidgets.QPushButton(self.hidden_software)
+                self.btn_deletePC.setEnabled(False)
+                self.btn_deletePC.setGeometry(QtCore.QRect(560, 350, 120, 30))
+                self.btn_deletePC.setFont(self.font)
+                self.btn_deletePC.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+                self.btn_deletePC.setStyleSheet(self.styleSheet.inverse_btn_off)
+                self.btn_deletePC.setObjectName("btn_deletePC")
+                self.btn_deletePC.setText("Удалить")
+                self.btn_deletePC.setHidden(True)
+                
         def retranslateUi(self, Form):
                 Form.setWindowTitle("WorkDay")
 
@@ -879,19 +1165,25 @@ class Ui_Form(object):
                 self.btn_delete_record.setText("Удалить")
                 self.label_report_allhours.setText("В периоде:")
                 self.label_report_count_hours.setText("198")
-                self.tabWidget.setTabText(self.tabWidget.indexOf(self.reports), "Управление отчетностью")
+                self.tabWidget.setTabText(self.tabWidget.indexOf(self.reports), "Отчетность")
+
                 self.label_permissions_title.setText("Разрешения")
                 self.checkbox_report.setText("Редактирование отчета")
                 self.checkbox_inreport.setText("Отображение в отчете")
                 self.checkbox_start_day.setText("Запуск таймера")
                 self.checkbox_admin.setText("Администратор")
+                self.checkbox_hiddenSoft_R.setText('Скрытое ПО - R')
+                self.checkbox_hiddenSoft_RW.setText('Скрытое ПО - RW')
+                self.checkbox_specialReport.setText('Специальный отчет')
+
                 self.btn_adduser_save.setText("Добавить")
                 self.lineEdit_username.setPlaceholderText("ФИО")
                 self.btn_adduser_cancel.setText("Отмена")
                 self.label_add_user_title.setText("Добавить пользователя")
                 self.lineEdit_login.setPlaceholderText("Логин")
                 self.lineEdit_organization.setPlaceholderText('Организация')
-                self.tabWidget.setTabText(self.tabWidget.indexOf(self.users), "Управление пользователем")
+                self.lineEdit_birthday.setPlaceholderText('Дата рождения')
+                self.tabWidget.setTabText(self.tabWidget.indexOf(self.users), "Пользователь")
                 self.label_errors.setText("") # Label для вывода информации
                 self.btn_changeuser_save.setText('Сохранить')
                 self.btn_changeuser_cancel.setText('Отмена')
@@ -903,6 +1195,9 @@ class Ui_Form(object):
 
                 # Вкладка WorkDay
                 self.tabWidget.setTabText(self.tabWidget.indexOf(self.workday), "WorkDay")
+
+                # Вкладка с пиратским ПО
+                self.tabWidget.setTabText(self.tabWidget.indexOf(self.hidden_software), "Пиратское ПО")
                 
                 self.btn_start.setText('К работе приступил')
                 self.btn_dinner.setText('Ушел на обед')
@@ -920,8 +1215,8 @@ class Ui_Form(object):
 
                 self.status_title.setText('Статусы')
 
-# Путь до БД
-database_path = r'workday.sqlite'
+# Путь до БД, расположен на хомяке it_lunatic (возможно далее будет изменен)
+database_path = r'\\x3.corp.motiv\support$\it_lunatic\Разработка\Python\workday.sqlite'
 
 class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
         def __init__(self):
@@ -943,6 +1238,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
 
                 # Создание объекта "Пользователь", через который будет большая часть взаимодействия с БД
                 self.user = db.user(self.connect, self.cursor)
+
+                # Проверяем доступность приложения
+                app_isEnabled = int(self.cursor.execute('SELECT value FROM options WHERE name = "app_isEnabled"').fetchone()[0])
+                if not app_isEnabled:
+                        self.styleSheet = styleSheet.styleSheet(colors)
+                        print('Приложение не возможно запустить, такая возможность выключена в БД')
+                        self.setup_error(self)
+                        self.label.setText('Не получилось запустить приложение')
+                        return
+                
+                modules_list = ("report_isEnabled", "users_isEnabled", "hiddenSoft_isEnabled", "workDay_isEnabled", "vacations_isEnabled")
+                self.report_isEnabled, self.users_isEnabled, self.hiddenSoft_isEnabled, self.workDay_isEnabled, self.vacations_isEnabled = [
+                        self.cursor.execute('SELECT value FROM options WHERE name = "{name}"'.format(name=x)).fetchone()[0] for x in modules_list
+                ]
 
                 if self.user.my_info:
                         # В переменной self.user.my_info хранятся данные, полученные с БД.
@@ -975,9 +1284,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                         self.styleSheet = styleSheet.styleSheet(colors)
 
                         # Проверка версии приложения
-
                         db_version = self.cursor.execute("SELECT value FROM options WHERE name = 'app_version'").fetchone()[0]
-                        if APP_VERSION != db_version:
+                        if APP_VERSION <= db_version:
                                 self.setup_error(self)
                                 self.label.setText('Появилась новая версия приложения, необходимо обновить')
                                 self.btn.setText('Обновить')
@@ -992,23 +1300,35 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                                         self.btn.clicked.connect(lambda x: self.open_update_folder(newapp_folder))
                                 return
                         
-                        if self.user.my_root_report or self.user.my_root_admin or (self.user.my_root_startday and self.user.my_root_inReport):
+                        if self.vacations_isEnabled:
+                                # Проверяем и отправляем письма об отпусках
+                                try:
+                                        vacation = Vacation(self.cursor, self.connect)
+                                        vacation.auto()
+                                        vacation.close()
+                                except Exception as e:
+                                        self.user.error(str(e))
+                                        self.user.insert_log(53, datetime.datetime.now(), 'Неудачная попытка отправить письма об отпусках', new_value=str(e))
+                        
+                        if self.user.my_root_report or self.user.my_root_admin or (self.user.my_root_startday and self.user.my_root_inReport) or (self.user.my_root_hidden_software_r or self.user.my_root_hidden_software_rw):
                                 self.setupUi(self)
 
+                                # Записываем логи о запуске приложения
                                 if not self.user.testMode:
                                         self.cursor.execute("""
-                                                UPDATE users
-                                                SET     last_activity = '{last_activity}',
-                                                        last_hostname = '{hostname}'
-                                                WHERE users.id = {my_id}
+                                                INSERT INTO app_starting(id_user, hostname, start_time, app_version)
+                                                VALUES 
+                                                ({id_user}, '{hostname}', '{start_time}', '{app_version}')
                                         """.format(
-                                                last_activity = self.user.time_to_db(datetime.datetime.now()),
-                                                hostname = gethostname(),
-                                                my_id = self.user.my_id
+                                                id_user = self.user.my_id,
+                                                hostname = gethostname().upper(),
+                                                start_time = report.date_datetime(datetime.datetime.now(), mode='class').format_db,
+                                                app_version = APP_VERSION
                                         ))
                                         self.connect.commit()
 
                                 if self.user.testMode:
+                                        print('[TEST MODE]')
                                         self.label_errors.setText('Запущено в тестовом режиме')
 
                                 self.combobox_username.currentTextChanged.connect(self.update_info)                             # Прослушка combobox (с пользователями) на изменение
@@ -1035,6 +1355,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                                 self.temp_report_list = []                                                                      # Массив для хранения объектов (label и btn),
                                                                                                                                 # которые показываются при вводе периода (или нажатии кнопки "Этот месяц")
                                                                                                                                 # Все объекты из данного массива удаляются по вызову ф-ии clear_report()
+
+                                self.temp_pc_list = []                                                                          # Массив в котором хранятся объекты с ПК, которые надо очищать
 
                                 self.old_value = {                                                                              # Нужно чтобы при стирании значений в input, автоматически не подставлялась точка (или :)
                                         self.lineEdit_startdate: '',
@@ -1068,7 +1390,28 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
 
                                 self.lineEdit_username.textChanged.connect(lambda ch, obj = self.lineEdit_username: self.addUser_changed(obj))
                                 self.lineEdit_login.textChanged.connect(lambda ch, obj = self.lineEdit_login: self.addUser_changed(obj))
-                                self.lineEdit_organization.textChanged.connect(lambda ch, obj = self.lineEdit_login: self.addUser_changed(obj))
+                                self.lineEdit_organization.textChanged.connect(lambda ch, obj = self.lineEdit_organization: self.addUser_changed(obj))
+                                self.lineEdit_birthday.textChanged.connect(lambda ch, obj = self.lineEdit_birthday: self.addUser_changed(obj))
+
+                                self.lineEdit_find.textChanged.connect(self.lineEdit_find_changed)
+                                self.lineEdit_AddressPC.textChanged.connect(self.lineEdit_AddressPC_changed)
+                                self.lineEdit_PCusername.textChanged.connect(self.lineEdit_PCusername_changed)
+                                self.lineEdit_PCcase.textChanged.connect(self.lineEdit_PCcase_changed)
+                                self.lineEdit_PCsoft.textChanged.connect(self.lineEdit_PCsoft_changed)
+                                self.btn_cancelPC.clicked.connect(self.clear_fieldInfoAboutPC)
+                                self.btn_savePC.clicked.connect(self.btn_savePC_clicked)
+                                self.lineEdit_PCdelete.textChanged.connect(self.lineEdit_PCdelete_changed)
+                                self.btn_deletePC.clicked.connect(self.btn_deletePC_clicked)
+                                self.lineEdit_AddPC_namePC.textChanged.connect(self.lineEdit_AddPC_changed)
+                                self.btn_generateReportHiddenSoft.clicked.connect(self.generateReportAboutHiddenSoftware)
+
+                                self.btn_save_PC_status = None          # В этой переменной хранится статус кнопки, в зависимости от которого будут выполняться разные действия:
+                                                                        # Возможные статусы:
+                                                                        # 1. None       - стандарт, ничего делаться не будет
+                                                                        # 2. changing   - изменение записей о ПК
+                                                                        # 3. adding     - добавление записи о ПК
+
+                                self.showedPC_id = 0    # ID ПК, который в данный момент отображается
 
                                 if self.user.my_root_admin and not self.user.my_root_report:
                                         # Данное условие выполняется если у пользователя есть права Администратора, но при этом нету прав на Редактирование отчета
@@ -1105,7 +1448,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                                         # Если есть права на Редактирование отчета и при этом не является Администратором
 
                                         # Прячем 2 вкладку (вкладка для добавления и редактирования пользователей) от тех, у кого нету права на её просмотр, ибо нефиг смотреть туда, куда не надо)
-                                        self.tabWidget.setTabVisible(self.tabWidget.indexOf(self.users), False)
+                                        # self.tabWidget.setTabVisible(self.tabWidget.indexOf(self.users), False)
+                                        self.tabWidget.removeTab(self.tabWidget.indexOf(self.users))
 
                                         # Т.к. для редактирования отчета необходимы только определенные пользователи из БД выбираются только те,
                                         # у кого в таблице root значение inReport = 1 (означает что он должен отображаться в отчете).
@@ -1126,13 +1470,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                                         # Проверяем есть ли доступы к 1 и 2 вкладке, если нету, то отключаем их отображение
                                         if not self.user.my_root_report and not self.user.my_root_admin:
                                                 # Если нету прав на работу с админкой и отчетами, отключаем вкладку с отчетами и добавляем только 1 пользователя (того, кто запустил)
-                                                self.tabWidget.setTabVisible(self.tabWidget.indexOf(self.reports), False)
+                                                # self.tabWidget.setTabVisible(self.tabWidget.indexOf(self.reports), False)
+                                                self.tabWidget.removeTab(self.tabWidget.indexOf(self.reports))
                                                 self.combobox_username.addItem( self.user.my_username )
                                                 self.combobox_username.setEnabled(False)
 
                                         if not self.user.my_root_admin:
                                                 # Дополнительно, если нету прав администратора выключаем вкладку с управлением пользователями
-                                                self.tabWidget.setTabVisible(self.tabWidget.indexOf(self.users), False)
+                                                # self.tabWidget.setTabVisible(self.tabWidget.indexOf(self.users), False)
+                                                self.tabWidget.removeTab(self.tabWidget.indexOf(self.users))
 
                                         self.btn_start.clicked.connect(self.start_day)
                                         self.btn_dinner.clicked.connect(self.dinner)
@@ -1196,13 +1542,401 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                                 
                                 else:
                                         # Если прав нема:
-                                        self.tabWidget.setTabVisible(self.tabWidget.indexOf(self.workday), False)
+                                        # self.tabWidget.setTabVisible(self.tabWidget.indexOf(self.workday), False)
+                                        self.tabWidget.removeTab(self.tabWidget.indexOf(self.workday))
+
+                                if self.user.my_root_hidden_software_r or self.user.my_root_hidden_software_rw:
+                                        # Активация вкладки, где находится пиратское ПО
+
+                                        # Проверяем есть ли доступы к 1 и 2 вкладке, если нету, то отключаем их отображение
+                                        if not self.user.my_root_report and not self.user.my_root_admin:
+                                                # Если нету прав на работу с админкой и отчетами, отключаем вкладку с отчетами и добавляем только 1 пользователя (того, кто запустил)
+                                                # self.tabWidget.setTabVisible(self.tabWidget.indexOf(self.reports), False)
+                                                self.tabWidget.removeTab(self.tabWidget.indexOf(self.reports))
+                                                self.combobox_username.addItem( self.user.my_username )
+                                                self.combobox_username.setEnabled(False)
+
+                                        if not self.user.my_root_admin:
+                                                # Дополнительно, если нету прав администратора выключаем вкладку с управлением пользователями
+                                                # self.tabWidget.setTabVisible(self.tabWidget.indexOf(self.users), False)
+                                                self.tabWidget.removeTab(self.tabWidget.indexOf(self.users))
+
+                                        # Активируем кнопку добавления ПК и выгрузки отчета для тех, кому это разрешено
+                                        if self.user.my_root_hidden_software_rw:
+                                                self.btn_generateReportHiddenSoft.setEnabled(True)
+                                                self.btn_generateReportHiddenSoft.setStyleSheet(self.styleSheet.btn)
+
+                                                self.btn_addHiddenPC.setEnabled(True)
+                                                self.btn_addHiddenPC.setStyleSheet(self.styleSheet.btn)
+
+                                                self.btn_addHiddenPC.clicked.connect(self.btn_addHiddenPC_clicked)
+
+                                else:
+                                        # если нету прав на чтение/редактирование данных о пиратском софте
+                                        # self.tabWidget.setTabVisible(self.tabWidget.indexOf(self.hidden_software), False)
+                                        self.tabWidget.removeTab(self.tabWidget.indexOf(self.hidden_software))
+
+                                # Отключаем вкладки, если в БД их функционал выключен
+
+                                if not self.users_isEnabled: self.tabWidget.removeTab(self.tabWidget.indexOf(self.users))
+                                if not self.report_isEnabled: self.tabWidget.removeTab(self.tabWidget.indexOf(self.reports))
+                                if not self.workDay_isEnabled: self.tabWidget.removeTab(self.tabWidget.indexOf(self.workday))
+                                if not self.hiddenSoft_isEnabled: self.tabWidget.removeTab(self.tabWidget.indexOf(self.hidden_software))
 
                         else:
                                 self.setup_error(self)
 
                 else:
                         self.setup_error(self)
+
+        def generateReportAboutHiddenSoftware(self): # Генерация отчета по скрытому ПО
+                """Генерация отчета по скрытому ПО"""
+                path_to_save = QtWidgets.QFileDialog.getExistingDirectoryUrl().url()[8::]
+                path_to_save = os.path.join(path_to_save, 'Отчет по скрытому ПО на ПК.xlsx')
+
+                self.user.insert_log(
+                        id_user = self.user.my_id,
+                        time = self.user.time_to_db(datetime.datetime.now()),
+                        param = 'Uploading the report about PC with non licensing software'
+                )
+
+                report = hiddenSoft_report.hiddenSoftReport(self.cursor)
+                report.generate(path_to_save)
+
+        def btn_addHiddenPC_clicked(self): # Отработка нажатия кнопки 'Добавить ПК' в Пиратском ПО
+                self.clear_fieldInfoAboutPC()
+                self.label_title_PCInfo.setText('Добавление ПК')
+
+                self.label_AddPC_namePC.setHidden(False)
+                self.lineEdit_AddPC_namePC.setHidden(False)
+                self.lineEdit_AddPC_namePC.setText('')
+                self.lineEdit_AddPC_namePC.setStyleSheet(self.styleSheet.input_text)
+
+                self.label_AddressPC.setHidden(False)
+                self.lineEdit_AddressPC.setHidden(False)
+                self.lineEdit_AddressPC.setText('')
+                self.lineEdit_AddressPC.setStyleSheet(self.styleSheet.input_text)
+                
+                self.label_PCusername.setHidden(False)
+                self.lineEdit_PCusername.setHidden(False)
+                self.lineEdit_PCusername.setText('')
+                self.lineEdit_PCusername.setStyleSheet(self.styleSheet.input_text)
+
+                self.label_PCcase.setHidden(False)
+                self.lineEdit_PCcase.setHidden(False)
+                self.lineEdit_PCcase.setText('')
+                self.lineEdit_PCcase.setStyleSheet(self.styleSheet.input_text)
+
+                self.label_PCsoft.setHidden(False)
+                self.lineEdit_PCsoft.setHidden(False)
+                self.lineEdit_PCsoft.setText('')
+                self.lineEdit_PCsoft.setStyleSheet(self.styleSheet.input_text)
+
+                self.btn_savePC.setHidden(False)
+                self.btn_cancelPC.setHidden(False)
+
+                self.label_PCdelete_bg.setHidden(True)
+                self.lineEdit_PCdelete.setHidden(True)
+                self.btn_deletePC.setHidden(True)
+
+                self.btn_save_PC_status = 'adding'
+
+        def lineEdit_AddPC_changed(self): # Изменено имя ПК
+                
+                self.label_errors.setText('')
+                if self.lineEdit_AddPC_namePC.text():
+                        self.lineEdit_AddPC_namePC.setStyleSheet(self.styleSheet.input_text_full)
+
+                        if re.findall(r'[А-я]', self.lineEdit_AddPC_namePC.text()):
+                                self.lineEdit_AddPC_namePC.setStyleSheet(self.styleSheet.input_text_full_error)
+                                self.label_errors.setText('Имя ПК содержит русский язык')
+
+                elif not self.lineEdit_AddPC_namePC.text():
+                        self.lineEdit_AddPC_namePC.setStyleSheet(self.styleSheet.input_text)
+
+        def btn_find_clicked(self): # Отработка нажатия кнопки 'Поиск' в Пиратском ПО
+                """ Отработка нажатия кнопки 'Поиск' в Пиратском ПО """
+
+                pc_list = self.cursor.execute("""
+                        SELECT pc_name, id FROM hidden_software
+                        WHERE LOWER(pc_name) LIKE '%{pc_name}%' AND NOT isDeleted
+                        LIMIT 10
+                """.format(
+                        pc_name = self.lineEdit_find.text().lower()
+                )).fetchall()
+
+                # Очищаем имеющийся список
+                self.clear_pcList()
+
+                if not pc_list:
+                        self.label_title_findResults.setText('Ничего не найдено')
+                        return
+                
+                self.label_title_findResults.setText('Результаты поиска')
+                start_y = 100
+
+                for pc in pc_list:
+                        self.btn_pc = QtWidgets.QPushButton(self.hidden_software)
+                        self.btn_pc.setGeometry(QtCore.QRect(20, start_y, 130, 25))
+                        self.btn_pc.setFont(self.font)
+                        self.btn_pc.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+                        self.btn_pc.setObjectName(str(pc[1]))
+                        self.btn_pc.setText(str(pc[0]))
+                        self.btn_pc.setStyleSheet(self.styleSheet.inverse_btn)
+                        self.btn_pc.clicked.connect(lambda ch, btn = self.btn_pc: self.show_PC_with_hidden_software(btn))
+                        self.btn_pc.show()
+                        self.temp_pc_list.append(self.btn_pc)
+                        start_y += 30
+
+        def clear_pcList(self): # Для очистки кнопок в поиске компов
+                """ Для очистки кнопок в поиске компов """
+                self.label_title_PCInfo.setText('Выберите ПК')
+                self.label_title_findResults.setText('Введите запрос')
+                self.clear_fieldInfoAboutPC()
+                while self.temp_pc_list:
+                        for i in self.temp_pc_list:
+                                i.deleteLater()
+                                self.temp_pc_list.remove(i)
+
+        def clear_fieldInfoAboutPC(self): # Очистка поля с информацией об показанном ПК
+                """ Очистка поля с информацией об показанном ПК """
+                self.showedPC_id = 0
+                self.label_title_PCInfo.setText('Выберите ПК')
+                self.label_whenPCadd.setText('')
+                self.label_whoAddPC.setText('')
+                self.label_whoAddPC_username.setText('')
+                self.label_whenPCadd_time.setText('')
+                self.lineEdit_AddressPC.setHidden(True)
+                self.lineEdit_AddressPC.setText('')
+                self.label_AddressPC.setHidden(True)
+
+                self.label_PCusername.setHidden(True)
+                self.lineEdit_PCusername.setHidden(True)
+                self.lineEdit_PCusername.setText('')
+
+                self.label_PCcase.setHidden(True)
+                self.lineEdit_PCcase.setHidden(True)
+                self.lineEdit_PCcase.setText('')
+
+                self.label_PCsoft.setHidden(True)
+                self.lineEdit_PCsoft.setHidden(True)
+                self.lineEdit_PCsoft.setText('')
+
+                self.btn_savePC.setHidden(True)
+                self.btn_cancelPC.setHidden(True)
+
+                self.label_PCdelete_bg.setHidden(True)
+                self.lineEdit_PCdelete.setHidden(True)
+                self.lineEdit_PCdelete.setText('')
+                self.btn_deletePC.setHidden(True)
+
+                self.lineEdit_AddPC_namePC.setHidden(True)
+                self.lineEdit_AddPC_namePC.setText('')
+                self.label_AddPC_namePC.setHidden(True)
+                
+        def show_PC_with_hidden_software(self, pc): # Показать информацию по ПК, который был выбран
+                """ Показать информацию по ПК, который был выбран """
+                self.btn_save_PC_status = 'changing'
+                self.clear_fieldInfoAboutPC()
+                pc_id = pc.objectName()
+                self.showedPC_id = pc_id
+                pc_info = self.cursor.execute("""
+                        SELECT users.username, h.pc_name, h.address, h.software, h.user_fullname, h.case_number, h.created FROM hidden_software h
+                        JOIN users ON users.id = h.id_user
+                        WHERE h.id = {pc_id}
+                        LIMIT 1
+                """.format(
+                        pc_id = pc_id
+                )).fetchone()
+
+                if not self.user.testMode:
+                        self.user.insert_log(
+                                id_user = self.user.my_id,
+                                time = self.user.time_to_db(datetime.datetime.now()),
+                                param = 'Show PC info ' + pc_info[1]
+                        )
+
+                pc_AddDate = pc_info[6].split(' ')[0].split('-')[2] + '.' + pc_info[6].split(' ')[0].split('-')[1] + '.' + pc_info[6].split(' ')[0].split('-')[0]
+                pc_AddTime = pc_info[6].split(' ')[1]
+
+                self.label_title_PCInfo.setText('Информация об ' + pc_info[1])
+
+                self.label_whenPCadd.setText('Время добавления:')
+                self.label_whenPCadd_time.setText(' '.join([pc_AddDate, pc_AddTime]))
+
+                self.label_whoAddPC.setText('Добавил:')
+                self.label_whoAddPC_username.setText(pc_info[0])
+
+                self.label_AddressPC.setHidden(False)
+                self.lineEdit_AddressPC.setHidden(False)
+                self.lineEdit_AddressPC.setText(pc_info[2])
+                
+                self.label_PCusername.setHidden(False)
+                self.lineEdit_PCusername.setHidden(False)
+                self.lineEdit_PCusername.setText(pc_info[4])
+
+                self.label_PCcase.setHidden(False)
+                self.lineEdit_PCcase.setHidden(False)
+                self.lineEdit_PCcase.setText(pc_info[5])
+
+                self.label_PCsoft.setHidden(False)
+                self.lineEdit_PCsoft.setHidden(False)
+                self.lineEdit_PCsoft.setText(pc_info[3])
+
+                self.btn_savePC.setHidden(False)
+                self.btn_savePC.setEnabled(True)
+                self.btn_savePC.setStyleSheet(self.styleSheet.inverse_btn)
+                self.btn_cancelPC.setHidden(False)
+                self.btn_cancelPC.setEnabled(True)
+                self.btn_cancelPC.setStyleSheet(self.styleSheet.inverse_btn)
+
+                self.label_PCdelete_bg.setHidden(False)
+                self.lineEdit_PCdelete.setHidden(False)
+                self.btn_deletePC.setHidden(False)
+
+                # Если у сотрудника имеются права только на чтение
+                if self.user.my_root_hidden_software_r:
+                        self.label_PCdelete_bg.setHidden(True)
+                        self.lineEdit_PCdelete.setHidden(True)
+                        self.btn_deletePC.setHidden(True)
+
+                        self.btn_savePC.setEnabled(False)
+                        self.btn_savePC.setStyleSheet(self.styleSheet.inverse_btn_off)
+
+                        self.btn_cancelPC.setEnabled(False)
+                        self.btn_cancelPC.setStyleSheet(self.styleSheet.inverse_btn_off)
+        
+        def btn_savePC_clicked(self): # Обработка нажатия на кнопку "сохранить ПК"
+                address = self.lineEdit_AddressPC.text()
+                username = self.lineEdit_PCusername.text()
+                case_number = self.lineEdit_PCcase.text()
+                software = self.lineEdit_PCsoft.text()
+                pc_name = self.lineEdit_AddPC_namePC.text()
+
+                if self.btn_save_PC_status == 'adding':
+
+                        if not address: self.lineEdit_AddressPC.setStyleSheet(self.styleSheet.input_text_error)
+                        if not username: self.lineEdit_PCusername.setStyleSheet(self.styleSheet.input_text_error)
+                        if not case_number: self.lineEdit_PCcase.setStyleSheet(self.styleSheet.input_text_error)
+                        if not software: self.lineEdit_PCsoft.setStyleSheet(self.styleSheet.input_text_error)
+                        if not pc_name: self.lineEdit_AddPC_namePC.setStyleSheet(self.styleSheet.input_text_error)
+
+                        # Нельзя добавить ПК в базу пока одно из полей не заполнено
+                        if not address or not username or not case_number or not software or not pc_name: return
+
+                        # Ищем ПК с таким же именем
+                        isPCexists = self.cursor.execute(f'SELECT id FROM hidden_software WHERE pc_name = UPPER("{pc_name}") LIMIT 1').fetchone()
+                        if isPCexists: 
+                                self.lineEdit_AddPC_namePC.setStyleSheet(self.styleSheet.input_text_full_error)
+                                self.label_errors.setText('ПК с таким именем уже существует')
+                                return
+
+                        self.cursor.execute(f"""
+                                INSERT INTO hidden_software(id_user, pc_name, address, software, user_fullname, case_number) VALUES
+                                ('{self.user.my_id}', UPPER('{pc_name}'), '{address}', '{software}', '{username}', '{case_number}')                        
+                        """)
+                        self.connect.commit()
+                        record_id = self.cursor.execute(f'SELECT id FROM hidden_software WHERE pc_name = UPPER("{pc_name}") LIMIT 1').fetchone()[0]
+                        self.user.insert_log(
+                                id_user=self.user.my_id,
+                                time=self.user.time_to_db(datetime.datetime.now()),
+                                param='Add PC with crack software ' + str(record_id)
+                        )
+                        self.clear_fieldInfoAboutPC()
+                        return
+
+                old_data = self.cursor.execute(f'SELECT address, software, user_fullname, case_number FROM hidden_software WHERE id = {self.showedPC_id} LIMIT 1').fetchone()
+                new_data = (address, software, username, case_number)
+
+                self.user.insert_log(
+                        id_user=self.user.my_id,
+                        time=self.user.time_to_db(datetime.datetime.now()),
+                        param='Changed PC info ' + str(self.showedPC_id),
+                        last_value=str(old_data),
+                        new_value=str(new_data)
+                )
+
+                self.cursor.execute("""
+                        UPDATE hidden_software
+                        SET address = '{address}', software = '{software}', user_fullname = '{user_fullname}', case_number = '{case_number}'
+                        WHERE id = {pc_id}
+                """.format(
+                        address = address,
+                        software = software,
+                        user_fullname = username,
+                        case_number = case_number,
+                        pc_id = self.showedPC_id
+                ))
+                self.connect.commit()
+                self.clear_fieldInfoAboutPC()
+
+        def btn_deletePC_clicked(self): # Обработка удаления записи о скрытом ПО на ПК
+
+                self.user.insert_log(
+                        id_user=self.user.my_id,
+                        time=self.user.time_to_db(datetime.datetime.now()),
+                        param='Delete PC ' + str(self.showedPC_id)
+                )
+
+                delete_reason = self.lineEdit_PCdelete.text()
+                self.cursor.execute(f"""
+                        UPDATE hidden_software
+                        SET isDeleted = 1, delete_reason = '{delete_reason}', delete_time = datetime('now', '+5 hours')
+                        WHERE id = {self.showedPC_id}
+                """)
+                self.connect.commit()
+                self.btn_find_clicked()
+                self.clear_fieldInfoAboutPC()
+
+        def lineEdit_PCdelete_changed(self): # Отработка события при измении поля с удалением ПК
+                
+                if self.lineEdit_PCdelete.text():
+                        self.lineEdit_PCdelete.setStyleSheet(self.styleSheet.input_text_full)
+                        self.btn_deletePC.setEnabled(True)
+                        self.btn_deletePC.setStyleSheet(self.styleSheet.inverse_btn)
+                elif not self.lineEdit_PCdelete.text():
+                        self.lineEdit_PCdelete.setStyleSheet(self.styleSheet.input_text)
+                        self.btn_deletePC.setEnabled(False)
+                        self.btn_deletePC.setStyleSheet(self.styleSheet.inverse_btn_off)
+
+        def lineEdit_PCcase_changed(self): # Отработка события при измении поля с кейсом
+                
+                if self.lineEdit_PCcase.text():
+                        self.lineEdit_PCcase.setStyleSheet(self.styleSheet.input_text_full)
+                elif not self.lineEdit_PCcase.text():
+                        self.lineEdit_PCcase.setStyleSheet(self.styleSheet.input_text)
+
+        def lineEdit_PCsoft_changed(self): # Отработка события при измении поля с ПО
+                """ Отработка события при измении поля с ПО """
+
+                if self.lineEdit_PCsoft.text():
+                        self.lineEdit_PCsoft.setStyleSheet(self.styleSheet.input_text_full)
+                elif not self.lineEdit_PCsoft.text():
+                        self.lineEdit_PCsoft.setStyleSheet(self.styleSheet.input_text)
+
+        def lineEdit_PCusername_changed(self): # Отработка события при измении поля с владельцем ПК
+                
+                if self.lineEdit_PCusername.text():
+                        self.lineEdit_PCusername.setStyleSheet(self.styleSheet.input_text_full)
+                elif not self.lineEdit_PCusername.text():
+                        self.lineEdit_PCusername.setStyleSheet(self.styleSheet.input_text)
+
+        def lineEdit_AddressPC_changed(self): # Отработка события при измении поля с адресом ПК
+                
+                if self.lineEdit_AddressPC.text():
+                        self.lineEdit_AddressPC.setStyleSheet(self.styleSheet.input_text_full)
+                elif not self.lineEdit_AddressPC.text():
+                        self.lineEdit_AddressPC.setStyleSheet(self.styleSheet.input_text)
+
+        def lineEdit_find_changed(self): # Отработка события при измении текста в поле поиск ПК
+                """ Отработка события при измении текста в поле поиск ПК """
+                
+                self.clear_pcList()
+                if self.lineEdit_find.text():
+                        self.lineEdit_find.setStyleSheet(self.styleSheet.input_text_full)
+                        self.btn_find_clicked()
+                elif not self.lineEdit_find.text():
+                        self.lineEdit_find.setStyleSheet(self.styleSheet.input_text)
 
         def check_last_record(self): # Проверка, была ли закрыта последняя запись в WorkDay
                 last_record = self.cursor.execute("""
@@ -1778,17 +2512,29 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                 ))
                 self.connect.commit()
 
+                # Сбрасываем права сотрудника
                 self.cursor.execute("""
                         UPDATE root
                         SET     start_day = 0,
                                 report = 0,
                                 admin = 0,
-                                inReport = 0
+                                inReport = 0,
+                                generalReport = 0,
+                                hidden_software_r = 0,
+                                hidden_software_rw = 0
                         WHERE id_user = {id_user}
                 """.format(
                         id_user = self.selected_user_id
                 ))
                 self.connect.commit()
+
+                # Удаляем отпуска сотрудника из БД
+                self.cursor.execute(f"""
+                        DELETE FROM vacations
+                        WHERE id_user = {self.selected_user_id}
+                """)
+                self.connect.commit()
+
                 self.user.insert_log(self.user.my_id, self.user.time_to_db(datetime.datetime.now()), 'Deleted user ' + str(self.selected_user_id))
                 self.lineEdit_delete_reason.setText('')
                 index = self.combobox_username.currentIndex()
@@ -2286,11 +3032,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                                 self.btn_count.setFont(self.font)
                                 self.btn_count.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
                                 self.btn_count.setObjectName(date)
+                                self.btn_count.setStyleSheet(self.styleSheet.btn)
                                 if i[2] == 'auto':
                                         # Проверка на автоматическое закрытие
                                         self.btn_count.setStyleSheet(self.styleSheet.btn_red_text)
-                                else:
-                                        self.btn_count.setStyleSheet(self.styleSheet.btn)
+                                        
                                 self.btn_count.setText(str( day_len ))
                                 self.btn_count.show()
                                 self.btn_count.clicked.connect(lambda ch, btn = self.btn_count: self.show_date(btn))
@@ -2429,34 +3175,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                 report = self.checkbox_report.isChecked()
                 admin = self.checkbox_admin.isChecked()
                 inReport = self.checkbox_inreport.isChecked()
+                hiddenSoft_R = self.checkbox_hiddenSoft_R.isChecked()
+                hiddenSoft_RW = self.checkbox_hiddenSoft_RW.isChecked()
+                specialReport = self.checkbox_specialReport.isChecked()
 
-                if start_day:
-                        start_day = 1
-                else:
-                        start_day = 0
-
-                if report:
-                        report = 1
-                        if admin:
-                                admin = 1
-                                report = 0
-                else:
-                        report = 0
-
-                if admin:
-                        admin = 1
-                else:
-                        admin = 0
-
-                if inReport:
-                        inReport = 1
-                else:
-                        inReport = 0
+                start_day       = 1 if start_day else 0
+                report          = 1 if report and not admin else 0
+                admin           = 1 if admin else 0
+                inReport        = 1 if inReport else 0
+                hiddenSoft_R    = 1 if hiddenSoft_R and not hiddenSoft_RW else 0
+                hiddenSoft_RW   = 1 if hiddenSoft_RW else 0
+                specialReport   = 1 if specialReport else 0
 
                 self.user.change_user(self.selected_user_id, 'start_day', new_value = start_day)
                 self.user.change_user(self.selected_user_id, 'report', new_value = report)
                 self.user.change_user(self.selected_user_id, 'admin', new_value = admin)
                 self.user.change_user(self.selected_user_id, 'inReport', new_value = inReport)
+                self.user.change_user(self.selected_user_id, 'generalReport', new_value = specialReport)
+                self.user.change_user(self.selected_user_id, 'hidden_software_r', new_value = hiddenSoft_R)
+                self.user.change_user(self.selected_user_id, 'hidden_software_rw', new_value = hiddenSoft_RW)
                 self.change_user_cancel() # Обновляем чекбоксы, на тот случай, если имеются не совместимые права (report и admin не совместимы, может быть что-то одно)
 
         def change_user_cancel(self): # Ф-я для сброса выбранных чекбоксов, автоматически будут установлены значения из БД (p.s. внутри вызывается update_info)
@@ -2467,7 +3204,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                 # Set roots at 2 widget for selected user
                 root_list = self.cursor.execute(
                         """
-                                SELECT root.start_day, root.report, root.admin, root.inReport, users.id FROM users, root
+                                SELECT root.start_day, root.report, root.admin, root.inReport, users.id, root.generalReport, root.hidden_software_r, root.hidden_software_rw FROM users, root
                                 WHERE root.id_user = users.id AND users.username = "{username}"
                         """.format(
                                 username = username
@@ -2476,37 +3213,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
 
                 self.selected_user_id = root_list[4]
 
-                if root_list[0]:
-                        # Право на начало дня
-                        self.checkbox_start_day.setChecked(True)
-
-                if root_list[1]:
-                        # Право на работу с отчетом
-                        self.checkbox_report.setChecked(True)
-
-                if root_list[2]:
-                        # Администратор
-                        self.checkbox_admin.setChecked(True)
-
-                if root_list[3]:
-                        # Показ в отчете
-                        self.checkbox_inreport.setChecked(True)
-
-                if not root_list[0]:
-                        # Право на начало дня
-                        self.checkbox_start_day.setChecked(False)
-
-                if not root_list[1]:
-                        # Право на работу с отчетом
-                        self.checkbox_report.setChecked(False)
-
-                if not root_list[2]:
-                        # Администратор
-                        self.checkbox_admin.setChecked(False)
-
-                if not root_list[3]:
-                        # Показ в отчете
-                        self.checkbox_inreport.setChecked(False)
+                self.checkbox_start_day.setChecked(True) if root_list[0] else self.checkbox_start_day.setChecked(False)                                 # Право на начало дня
+                self.checkbox_report.setChecked(True) if root_list[1] and not root_list[2] else self.checkbox_report.setChecked(False)                  # Право на работу с отчетом
+                self.checkbox_admin.setChecked(True) if root_list[2] else self.checkbox_admin.setChecked(False)                                         # Администратор
+                self.checkbox_inreport.setChecked(True) if root_list[3] else self.checkbox_inreport.setChecked(False)                                   # Показ в отчете
+                self.checkbox_specialReport.setChecked(True) if root_list[5] else self.checkbox_specialReport.setChecked(False)                              # Специальный отчет
+                self.checkbox_hiddenSoft_R.setChecked(True) if root_list[6] and not root_list[7] else self.checkbox_hiddenSoft_R.setChecked(False)          # R  скрытого ПО
+                self.checkbox_hiddenSoft_RW.setChecked(True) if root_list[7] else self.checkbox_hiddenSoft_RW.setChecked(False)                              # RW скрытого ПО
 
                 self.clear_report()
                 self.label_title_weekday.setText('Выберите период')
@@ -2522,9 +3235,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                 username = self.lineEdit_username.text()
                 login = self.lineEdit_login.text()
                 organization = self.lineEdit_organization.text()
+                birthday = self.lineEdit_birthday.text()
                         
                 if not username: # Если ФИО не введено
                         self.lineEdit_username.setStyleSheet(self.styleSheet.input_text_error)
+
+                if not birthday: # Если дата рождения не введена
+                        self.lineEdit_birthday.setStyleSheet(self.styleSheet.input_text_error)
 
                 if not login: # Если логин не введен
                         self.lineEdit_login.setStyleSheet(self.styleSheet.input_text_error)
@@ -2532,22 +3249,28 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                 if not organization: # Если не введена организация
                         self.lineEdit_organization.setStyleSheet(self.styleSheet.input_text_error)
 
-                if username and login and organization: # Если и ФИО и логин введены, то добавляем пользователя
+                if username and login and organization and birthday: # Если и ФИО и логин введены, то добавляем пользователя
+
+                        if not re.match(r'^\d{2}\.\d{2}\.\d{4}$', self.lineEdit_birthday.text()):
+                                self.lineEdit_birthday.setStyleSheet(self.styleSheet.input_text_full_error)
+                                self.label_errors.setText('Формат даты DD.MM.YYYY')
+                                return
 
                         # Для начала проверяем, есть ли пользователь с таким логином
-                        _ = self.cursor.execute('SELECT id FROM users WHERE login = "{login}"'.format(
+                        _a = self.cursor.execute('SELECT id FROM users WHERE login = "{login}"'.format(
                                 login = login
                         )).fetchone()
 
-                        if not _:
-                                self.user.add_user(login, username, organization)
+                        if not _a:
+                                self.user.add_user(login, username, organization, birthday)
                                 self.combobox_username.addItem( username )
 
                                 self.lineEdit_username.setText('')
                                 self.lineEdit_login.setText('')
                                 self.lineEdit_organization.setText('')
+                                self.lineEdit_birthday.setText('')
                         
-                        elif _:
+                        elif _a:
                                 self.lineEdit_login.setStyleSheet(self.styleSheet.input_text_full_error)
                                 self.label_errors.setText('Пользователь с таким логином уже есть')
 
@@ -2565,6 +3288,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Form, Ui_error):
                 self.lineEdit_login.setStyleSheet(self.styleSheet.input_text)
                 self.lineEdit_organization.setText('')
                 self.lineEdit_organization.setStyleSheet(self.styleSheet.input_text)
+                self.lineEdit_birthday.setText('')
+                self.lineEdit_birthday.setStyleSheet(self.styleSheet.input_text)
 
         def close(self):
                 self.close()
